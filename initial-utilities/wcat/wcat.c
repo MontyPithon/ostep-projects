@@ -1,12 +1,8 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 int main(int argc, char *argv[])
 {
-    if (argc < 2)
-    {
-        printf("Error: missing file parameter!");
-        return -1;
-    }
 
     int fileParams = argc - 1;
     for (int i = 0; i < fileParams; ++i)
@@ -15,8 +11,8 @@ int main(int argc, char *argv[])
 
         if (file1 == NULL)
         {
-            printf("Error: file not found");
-            return -1;
+            printf("wcat: cannot open file\n");
+            exit(1);
         }
         int count = 128;
         char buffer[count];
