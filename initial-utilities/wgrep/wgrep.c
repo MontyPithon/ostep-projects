@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
         FILE *file = fopen(argv[i], "r");
         if (file == NULL)
         {
-            printf("%s", "wgrep: cannot open file");
+            printf("%s", "wgrep: cannot open file\n");
             exit(1);
         }
         // file found lets read for the searchParam
@@ -37,13 +37,51 @@ int main(int argc, char *argv[])
 
         // compare all lines
 
-        int sizeOfWord = getdelim(&buffer, &len, ' ', file);
-
-        while (sizeOfWord != -1 || sizeOfWord == 0)
+        while (getline(&buffer, &len, file))
         {
-            sizeOfWord = getdelim(&buffer, &len, ' ', file);
-            buffer[sizeOfWord - 1] = '\0';
+            // now we must go through and find search term
+
+            // for the very last line when EOF is present its undefined so we must add our own null terminator
+
+            // char pointer for line input
+            if (feof(file) == 0)
+            {
+                char *ptr = buffer;
+                char *ptrParam = searchParam;
+                while (*ptr != '\0')
+                {
+                    // they match
+                    if (*ptrParam == *ptr)
+                    {
+                        ++ptrParam;
+                    }
+                    // they dont match and search param is not at end
+                    else
+                    {
+                        if (*ptrParam != '\0')
+                        {
+                            ptrParam = searchParam;
+                        }
+                        else
+                        {
+                            // break as ptrParam is at end of search sequence tf we found a match
+                            printf("%s", buffer);
+                            break;
+                        }
+                    }
+                    ptr++;
                 }
+            }
+            else
+            {
+                break;
+            }
+        }
+        fclose(file);
+        if (buffer != NULL)
+        {
+            free(buffer);
+        }
     }
 
     return 0;
